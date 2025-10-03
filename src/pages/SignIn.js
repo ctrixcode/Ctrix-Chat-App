@@ -85,7 +85,7 @@ export default function Signin() {
             <VStack w={"full"} marginTop="2">
               <HStack w={"full"}>
                 <Button type="submit" isLoading={props.isSubmitting} w={"full"}>
-                  Log In
+                  Log In 
                 </Button>
                 <Button
                   type="reset"

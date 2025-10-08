@@ -55,7 +55,19 @@ Ctrix Chat is a real-time chat application built with React and Firebase. It all
     *   Create a new project on the [Firebase Console](https://console.firebase.google.com/).
     *   Add a new web app to your Firebase project.
     *   Copy your Firebase configuration.
-    *   Create a `.env` file in the root of the project and add your Firebase config:
+    *   Create a `.env` file in the root of the project and add your Firebase config. Make sure to use the correct variables for your environment (Development or Production).
+
+        ### For Development
+        ```
+        REACT_APP_FIREBASE_DEV_API_KEY=your-dev-api-key
+        REACT_APP_FIREBASE_DEV_AUTH_DOMAIN=your-dev-auth-domain
+        REACT_APP_FIREBASE_DEV_PROJECT_ID=your-dev-project-id
+        REACT_APP_FIREBASE_DEV_STORAGE_BUCKET=your-dev-storage-bucket
+        REACT_APP_FIREBASE_DEV_MESSAGING_SENDER_ID=your-dev-sender-id
+        REACT_APP_FIREBASE_DEV_APP_ID=your-dev-app-id
+        ```
+
+        ### For Production
         ```
         REACT_APP_FIREBASE_API_KEY=your-api-key
         REACT_APP_FIREBASE_AUTH_DOMAIN=your-auth-domain
@@ -63,9 +75,11 @@ Ctrix Chat is a real-time chat application built with React and Firebase. It all
         REACT_APP_FIREBASE_STORAGE_BUCKET=your-storage-bucket
         REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
         REACT_APP_FIREBASE_APP_ID=your-app-id
-        REACT_APP_GIPHY_API_KEY=your-giphy-api-key
         ```
     *   You will also need to get a Giphy API key from the [Giphy Developer Portal](https://developers.giphy.com/).
+        ```
+        REACT_APP_GIPHY_API_KEY=your-giphy-api-key
+        ```
 
 6.  **Run the development server**
     ```sh

@@ -64,7 +64,7 @@ Ctrix Chat is a real-time chat application built with React and Firebase. It all
         REACT_APP_FIREBASE_DEV_STORAGE_BUCKET=your-storage-bucket
         REACT_APP_FIREBASE_DEV_MESSAGING_SENDER_ID=your-sender-id
         REACT_APP_FIREBASE_DEV_APP_ID=your-app-id
-        REACT_APP_GIPHY_API_KEY=your-giphy-api-
+        REACT_APP_GIPHY_API_KEY=your-giphy-api-key
         
         For Production
          REACT_APP_FIREBASE_API_KEY=your-api-key
@@ -73,7 +73,7 @@ Ctrix Chat is a real-time chat application built with React and Firebase. It all
         REACT_APP_FIREBASE_STORAGE_BUCKET=your-storage-bucket
         REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your-sender-id
         REACT_APP_FIREBASE_APP_ID=your-app-id
-        REACT_APP_GIPHY_API_KEY=your-giphy-api-
+        REACT_APP_GIPHY_API_KEY=your-giphy-api-key
 
         ```
     *   You will also need to get a Giphy API key from the [Giphy Developer Portal](https://developers.giphy.com/).

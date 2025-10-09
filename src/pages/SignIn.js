@@ -7,16 +7,17 @@ import {
 import { auth } from "../firebase";
 
 import { useEffect } from "react";
-
 import { useNavigate } from "react-router-dom";
+
+// 1. Import from react-toastify
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import the CSS
+
 import FormContainer from "../components/Form/FormContainer";
-
 import { Button, VStack, HStack, useColorMode } from "@chakra-ui/react";
-
 import YupValidation, { initialValues } from "../components/Form/YupSignIn";
 import TextField from "../components/Form/TextField";
 import { Formik, Form } from "formik";
-
 import { IconContext } from "react-icons";
 import { FiLogIn } from "react-icons/fi";
 
@@ -27,11 +28,12 @@ export default function Signin() {
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        // This will navigate the user to the main page after a successful login
         Navigate("/main");
       }
     });
     // eslint-disable-next-line
-  }, [auth]);
+  }, []); // Note: The dependency array should likely be empty here
 
   const NavToSignUp = () => {
     Navigate("/signup");
@@ -40,28 +42,34 @@ export default function Signin() {
   const SignInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then((cred) => {
-        console.log("Log in successfully");
+      .then(() => {
+        // 3. Add success toast for Google Sign-In
+        toast.success("Successfully logged in!");
       })
       .catch((err) => {
-        console.log(err);
+        // 4. Add error toast for Google Sign-In
+        toast.error(err.message);
       });
   };
 
   const SignInWithEmailPassword = (values, actions) => {
     signInWithEmailAndPassword(auth, values.email, values.password)
       .then(() => {
+        // 3. Add success toast for Email/Password Sign-In
+        toast.success("Successfully logged in!");
         actions.setSubmitting(false);
-        console.log("Sign in Successfully");
       })
       .catch((err) => {
+        // 4. Add error toast for Email/Password Sign-In
+        toast.error(err.message);
         actions.setSubmitting(false);
-        console.error("Something went wrong", err);
       });
   };
 
   return (
-    <FormContainer Icon={LoginIcon} title="Sign in for an account!">
+    <FormContainer Icon={LoginIcon} title="Sign in to your account!">
+      {/* 2. Add the ToastContainer component */}
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <Formik
         initialValues={initialValues}
         validationSchema={YupValidation}

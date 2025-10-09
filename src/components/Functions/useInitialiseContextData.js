@@ -34,7 +34,7 @@ export default function useInitialiseContextData() {
       });
     }
     // Retrieve data and set it to hooks in context
-    if (!loading) {
+    if (!loading && Array.isArray(allUsersData)) {
       const CurrentUserData = allUsersData.filter(
         (user) => user.User_ID === Current_UserID
       );

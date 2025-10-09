@@ -19,7 +19,7 @@ import { SearchContextManager } from "@giphy/react-components";
 
 //
 
-import { Button, HStack, Input, Container, Stack } from "@chakra-ui/react";
+import { Button, HStack, Input, Container, Stack, useColorModeValue } from "@chakra-ui/react";
 import useDevice from "../Custom_hooks/useDevice";
 
 // Prop is related to receiving ref for empty div to scroll to down
@@ -169,6 +169,8 @@ export default function MsgSendUI(props) {
       id: id,
       Sender: context.Current_UserID,
       createdAt: serverTimestamp(),
+      seenBy :[],
+      isSeen:false
     };
     if (data.type === "text") {
       setDoc(LocRef, {
@@ -187,43 +189,71 @@ export default function MsgSendUI(props) {
 
     // props.emptydiv.current.scrollIntoView({ smooth: true });
   };
-  return (
-    <HStack
-      w="full"
-      padding="1"
-      pos="sticky"
-      bottom="0"
-      // bgColor="brand.primary"
-    >
-      <Container id="GifDiv" p="0" w={DEVICE === "Mobile" ? "10vw" : "2vw"}>
-        <GiffsDiv MsgSendHandler={SendMsg} show={context.showGifDiv} />
-        <Container onClick={OpenGif} p="0">
-          <GiffIcon />
-        </Container>
+const bgColor = useColorModeValue(
+  "brand.primaryLight", // light theme background
+  "brand.primary" // dark theme background
+);
+
+const inputBg = useColorModeValue(
+  "brand.sideBarBackgroundLight", // light input background
+  "brand.sideBarBackground" // dark input background
+);
+
+const inputTextColor = useColorModeValue(
+  "brand.primarytext", // light text
+  "brand.primarytextDark" // dark text
+);
+
+const sendBtnBg = useColorModeValue(
+  "brand.telegramBtn", // same for both, but keeping theme consistency
+  "brand.telegramBtn"
+);
+
+return (
+  <HStack
+    w="full"
+    padding="1"
+    pos="sticky"
+    bottom="0"
+    bg={bgColor}
+    spacing={2}
+  >
+    <Container id="GifDiv" p="0" w={DEVICE === "Mobile" ? "10vw" : "2vw"}>
+      <GiffsDiv MsgSendHandler={SendMsg} show={context.showGifDiv} />
+      <Container onClick={OpenGif} p="0">
+        <GiffIcon />
       </Container>
-      <Stack w="full">
-        <form
-          onSubmit={(e) => {
-            SendMsg({ type: "text", event: e });
-          }}
-        >
-          <Input
-            placeholder="Type your message.."
-            ref={NewMsgRef}
-            onChange={handleTyping}
-            onBlur={handleStopTyping}
-          />
-        </form>
-      </Stack>
-      <Button
-        onClick={() => SendMsg({ type: "text" })}
-        bgColor="brand.telegramBtn"
-        color="white"
+    </Container>
+
+    <Stack w="full">
+      <form
+        onSubmit={(e) => {
+          SendMsg({ type: "text", event: e });
+        }}
       >
-        Send
-      </Button>
-    </HStack>
-  );
+        <Input
+          placeholder="Type your message.."
+          ref={NewMsgRef}
+          onChange={handleTyping}
+          onBlur={handleStopTyping}
+          bg={inputBg}
+          color={inputTextColor}
+          border="none"
+          _focus={{ outline: "none", boxShadow: "none" }}
+        />
+      </form>
+    </Stack>
+
+    <Button
+      onClick={() => SendMsg({ type: "text" })}
+      bg={sendBtnBg}
+      color="white"
+      _hover={{ opacity: 0.8 }}
+    >
+      Send
+    </Button>
+  </HStack>
+);
 }
 
 function GiffsDiv({ MsgSendHandler, show }) {

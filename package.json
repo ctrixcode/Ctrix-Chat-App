@@ -3,7 +3,9 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/icons":"^2.2.0",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "@giphy/js-fetch-api": "^5.6.0",
@@ -21,11 +23,10 @@
     "react-firebase-hooks": "^5.1.1",
     "react-icons": "^5.2.1",
     "react-router-dom": "^6.24.0",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "uuid": "^10.0.0",
     "web-vitals": "^4.2.0",
-    "yup": "^1.4.0",
-    "@babel/plugin-proposal-private-property-in-object": "7.21.11"
+    "yup": "^1.4.0"
   },
   "scripts": {
     "start": "react-scripts start",

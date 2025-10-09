@@ -22,6 +22,7 @@ import {
   Text,
   useColorMode,
   CircularProgress,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import useDevice from "../Custom_hooks/useDevice";
 
@@ -131,99 +132,115 @@ export default function UserSettings(props) {
     context.setDisplayUserSettings(false);
     context.setFirstTimeLogin(false);
   };
-  return (
-    <Container
-      pos="fixed"
-      h={"full"}
-      w={"full"}
-      maxW="full"
-      zIndex="500"
-      justifyContent="center"
-      centerContent
+const bgColor = useColorModeValue(
+  "brand.sideBarBackgroundLight", // light mode
+  "brand.sideBarBackground" // dark mode
+);
+
+const textColor = useColorModeValue(
+  "brand.primarytext", // light mode
+  "brand.primarytextDark" // dark mode
+);
+
+return (
+  <Container
+    pos="fixed"
+    h="full"
+    w="full"
+    maxW="full"
+    zIndex="500"
+    justifyContent="center"
+    centerContent
+  >
+    <VStack
+      p="5"
+      w={DEVICE === "Mobile" ? "100vw" : "initial"}
+      borderRadius="3xl"
+      boxShadow="0 0 0 400vmax rgb(0 0 0 / 0.4)"
+      bg={bgColor}
+      color={textColor}
     >
-      <VStack
-        p="5"
-        w={DEVICE === "Mobile" ? "100vw" : "initial"}
-        borderRadius="3xl"
-        boxShadow="0 0 0 400vmax rgb(0 0 0 / 0.4)"
-        bgColor={colorMode === "dark" ? "facebook.900" : "facebook.200"}
-      >
-        {props.firstTime && <h1>Welcome to the Ctrix Chats</h1>}
+      {props.firstTime && (
+        <Heading size="lg" color={textColor}>
+          Welcome to the Ctrix Chats
+        </Heading>
+      )}
 
-        <form onSubmit={SendData}>
-          <VStack spacing="6">
-            {props.firstTime ? (
-              <FormLabel>Enter Your nickname: </FormLabel>
-            ) : (
-              <FormLabel>
-                Enter Your nickname, if you want to change it:
-              </FormLabel>
-            )}
-            <Input
-              min="4"
-              onChange={(e) => setInputName(e.target.value)}
-              value={inputName}
-              required={props.firstTime}
-            />
-            <FormLabel>Choose Avatar for your profile: </FormLabel>
-            <RadioGroup
-              onChange={setSelectedAvatar}
-              value={SelectedAvatar}
-              size="lg"
-              defaultValue={props.firstTime ? boy : null}
-            >
-              {!props.firstTime && (
-                <Radio value="default" flexDirection="column">
-                  No Change
-                </Radio>
-              )}
-              <Radio value={boy} flexDirection="column">
-                <Image src={boy} alt="boy avatar" boxSize={ImageSize} />
-              </Radio>
-              <Radio value={boy2} flexDirection="column">
-                <Image src={boy2} alt="boy2 avatar" boxSize={ImageSize} />
-              </Radio>
-              <Radio value={girl} flexDirection="column">
-                <Image src={girl} alt="girl avatar" boxSize={ImageSize} />
-              </Radio>
-              <Radio value={girl2} flexDirection="column">
-                <Image src={girl2} alt="girl2 avatar" boxSize={ImageSize} />
-              </Radio>
-              <Radio value="other" flexDirection="column">
-                <Text size="lg">Other</Text>
-              </Radio>
-            </RadioGroup>
-            {SelectedAvatar === "other" && (
-              <HStack>
-                <Input
-                  type="file"
-                  accept=".png, .jpg, .jpeg"
-                  ref={UploadRef}
-                  onChange={(e) => setimage(e.target.files[0])}
-                  required
-                ></Input>
-                <Button onClick={UploadFile}>Upload</Button>
-                {uploadSuccess && (
-                  <Heading size="sm">Uploaded Successfully</Heading>
-                )}
-                {uploading && <CircularProgress isIndeterminate size="10" />}
-                {clickUpload && !uploadSuccess && (
-                  <Heading size="sm">
-                    Click upload to upload your picture.
-                  </Heading>
-                )}
-              </HStack>
-            )}
+      <form onSubmit={SendData}>
+        <VStack spacing="6">
+          {props.firstTime ? (
+            <FormLabel color={textColor}>Enter Your nickname:</FormLabel>
+          ) : (
+            <FormLabel color={textColor}>
+              Enter Your nickname, if you want to change it:
+            </FormLabel>
+          )}
 
+          <Input
+            min="4"
+            onChange={(e) => setInputName(e.target.value)}
+            value={inputName}
+            required={props.firstTime}
+            bg={useColorModeValue("white", "gray.800")}
+            color={textColor}
+            border="1px solid"
+            borderColor={useColorModeValue("gray.300", "gray.600")}
+            _focus={{
+              outline: "none",
+              borderColor: "brand.telegramBtn",
+              boxShadow: "0 0 0 1px brand.telegramBtn",
+            }}
+          />
+
+          <FormLabel color={textColor}>Choose Avatar for your profile:</FormLabel>
+          <RadioGroup
+            onChange={setSelectedAvatar}
+            value={SelectedAvatar}
+            size="lg"
+            defaultValue={props.firstTime ? boy : null}
+          >
+            {!props.firstTime && (
+              <Radio value="default" flexDirection="column" color={textColor}>
+                No Change
+              </Radio>
+            )}
+            {[boy, boy2, girl, girl2].map((avatar, index) => (
+              <Radio key={index} value={avatar} flexDirection="column" color={textColor}>
+                <Image src={avatar} alt={`avatar${index}`} boxSize={ImageSize} />
+              </Radio>
+            ))}
+            <Radio value="other" flexDirection="column" color={textColor}>
+              <Text size="lg">Other</Text>
+            </Radio>
+          </RadioGroup>
+
+          {SelectedAvatar === "other" && (
             <HStack>
-              <Button type="submit">Submit</Button>
-              {!props.firstTime && (
-                <Button onClick={CancelSettings}>Cancel</Button>
+              <Input
+                type="file"
+                accept=".png, .jpg, .jpeg"
+                ref={UploadRef}
+                onChange={(e) => setimage(e.target.files[0])}
+                required
+              />
+              <Button onClick={UploadFile}>Upload</Button>
+              {uploadSuccess && <Heading size="sm">Uploaded Successfully</Heading>}
+              {uploading && <CircularProgress isIndeterminate size="10" />}
+              {clickUpload && !uploadSuccess && (
+                <Heading size="sm">Click upload to upload your picture.</Heading>
               )}
             </HStack>
-          </VStack>
-        </form>
-      </VStack>
-    </Container>
-  );
+          )}
+
+          <HStack>
+            <Button type="submit" bg="brand.telegramBtn" color="white">
+              Submit
+            </Button>
+            {!props.firstTime && <Button onClick={CancelSettings}>Cancel</Button>}
+          </HStack>
+        </VStack>
+      </form>
+    </VStack>
+  </Container>
+);
 }

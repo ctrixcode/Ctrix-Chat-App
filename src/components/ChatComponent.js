@@ -1,26 +1,36 @@
+import {
+  HStack,
+  Container,
+  Heading,
+  Text,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { useContext } from "react";
-
 import AppContext from "./GlobalStore/Context";
-
-import UserSettings from "../components/UI/UserSettings";
-
-import ChatRoom from "./ChatRoom";
-import SideBar from "./SideBar";
-
-import { Container, Heading, Text, HStack } from "@chakra-ui/react";
 import useDevice from "./Custom_hooks/useDevice";
+import SideBar from "./SideBar";
+// import { useContext } from "react";
+// import { AppContext } from "../context/AppContext"; // adjust the path as needed
+// import useDevice from "../hooks/useDevice"; // adjust if your custom hook lives elsewhere
+// import SideBar from "./SideBar"; // your sidebar component
+import ChatRoom from "./ChatRoom";
+import UserSettings from "./UI/UserSettings";
+// import UserSettings from "./UserSettings";
 
 export default function ChatComponent() {
   // Inits
   const context = useContext(AppContext);
   const DEVICE = useDevice();
 
+  // Background that adapts to theme
+  const bgColor = useColorModeValue("brand.secondaryLight", "brand.secondary");
+
   if (context.firstTimeLogin && !context.Loading) {
     return <UserSettings firstTime={true} />;
   }
 
   return (
-    <HStack spacing="0" bgColor="brand.secondary">
+    <HStack spacing="0" bgColor={bgColor}>
       <SideBar />
       {context.activeChatInit === undefined && DEVICE === "Desktop" && (
         <InActiveChatComponent />
@@ -32,7 +42,12 @@ export default function ChatComponent() {
   );
 }
 
+// =======================
 const InActiveChatComponent = () => {
+  // Theme-aware background + text
+  const bg = useColorModeValue("brand.chatBackgroundLight", "brand.chatBackground");
+  const textColor = useColorModeValue("brand.primarytext", "brand.primarytextDark");
+
   return (
     <Container
       maxW="full"
@@ -40,13 +55,16 @@ const InActiveChatComponent = () => {
       h="100vh"
       m="0"
       p="0"
-      // paddingTop="30vh"
       justifyContent="center"
       centerContent
-      backgroundColor="brand.chatBackground"
+      backgroundColor={bg}
+      color={textColor}
+      transition="background-color 0.3s ease, color 0.3s ease"
     >
-      <Heading size="2xl">Welcome to Ctrix Chats</Heading>
-      <Text>Select one of the chats</Text>
+      <Heading size="2xl" mb={2}>
+        Welcome to Ctrix Chats
+      </Heading>
+      <Text fontSize="lg">Select one of the chats</Text>
     </Container>
   );
 };

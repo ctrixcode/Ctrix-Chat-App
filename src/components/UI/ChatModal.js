@@ -2,9 +2,7 @@ import { useContext, useState, useEffect } from "react";
 import AppContext from "../GlobalStore/Context";
 import useDevice from "../Custom_hooks/useDevice";
 import usePictures from "../Custom_hooks/usePictures";
-
 import useMsgFetch from "../Custom_hooks/useMsgFetch";
-
 import {
   HStack,
   Image,
@@ -12,19 +10,21 @@ import {
   Text,
   VStack,
   useColorMode,
+  useColorModeValue,
 } from "@chakra-ui/react";
 
 export default function ChatModal(props) {
-  // inits
+  // Custom hooks & context
   const [Placeholder] = usePictures();
   const [Messages, isLoadingMessages] = useMsgFetch(props.data);
   const DEVICE = useDevice();
   const context = useContext(AppContext);
   const { colorMode } = useColorMode();
 
-  // Hooks
+  // Local state
   const [otherPersonData, setOtherPersonData] = useState();
 
+  // === Derived values ===
   const UserPicObtain =
     otherPersonData &&
     context.allUsersData?.find?.(
@@ -32,15 +32,31 @@ export default function ChatModal(props) {
     )?.ProfilePicture;
 
   const UserPic = UserPicObtain ? UserPicObtain : Placeholder;
+
   const chatModalName =
     props.data.ChatType === "Group"
       ? props.data.ChatName
       : otherPersonData?.NickName;
 
+  // === Color mode adaptive values ===
+  const activeBg = useColorModeValue(
+    "brand.sideBarActiveChatBgLight",
+    "brand.sideBarActiveChatBg"
+  );
+
+  const hoverBg = useColorModeValue("blackAlpha.100", "whiteAlpha.100");
+
+  const textColor = useColorModeValue(
+    "brand.primarytext",
+    "brand.primarytextDark"
+  );
+
+  // === Handlers ===
   const makeChatActive = () => {
     if (DEVICE === "Mobile") {
       context.setopenChat(true);
     }
+
     if (props.data.ChatType === "DM") {
       context.setActivePrivateChatOtherUserData(() => {
         return props.data.User1.ID === context.Current_UserID
@@ -50,14 +66,17 @@ export default function ChatModal(props) {
             );
       });
     }
+
     if (props.data.ChatType === "Group") {
       context.setActivePrivateChatOtherUserData(undefined);
     }
+
     context.setshowGifDiv(false);
     context.setActiveChatInit(props.data);
   };
+
+  // === Effects ===
   useEffect(() => {
-    // Setting Name of Chat
     if (props.data.ChatType === "DM") {
       setOtherPersonData(
         props?.data.User1.ID === context?.Current_UserID
@@ -69,6 +88,7 @@ export default function ChatModal(props) {
             )
       );
     }
+
     if (props.data.ChatType === "Group") {
       setOtherPersonData(props.data.otherPersonData);
     }
@@ -76,61 +96,65 @@ export default function ChatModal(props) {
   }, []);
 
   useEffect(() => {
-    // Setting active chat messages in a global store
     if (context?.activeChatInit?.ChatID === props?.data?.ChatID) {
       context.setActiveChatInitMessages([...Messages]);
     }
     // eslint-disable-next-line
   }, [context.activeChatInit?.ChatID, Messages]);
 
+  // === Render ===
+  const isActive = context?.activeChatInit?.ChatID === props.data.ChatID;
+
   return (
     <HStack
-      padding="1"
-      // className={`${styles.main} ${
-      //   context?.activeChatInit?.ChatID === props.data.ChatID && classes.activeChatInit
-      // }`}
+      p={2}
+      borderRadius="md"
+      transition="background 0.2s ease"
+      bg={isActive ? activeBg : "transparent"}
+      _hover={{
+        bg: !isActive ? hoverBg : activeBg,
+        cursor: "pointer",
+      }}
       onClick={makeChatActive}
-      // bgColor="inherit"
-      bgColor={
-        context?.activeChatInit?.ChatID === props.data.ChatID
-          ? colorMode === "dark"
-            ? "brand.sideBarActiveChatBg"
-            : "blackAlpha.100"
-          : "initial"
-      }
+      w="full"
+      align="center"
+      spacing={4}
     >
-      <HStack>
-        <Image
-          alt="User profile"
-          src={UserPic}
-          boxSize="14"
-          borderRadius="50%"
-          loading="lazy"
+      {/* Profile Image */}
+      <Image
+        alt="User profile"
+        src={UserPic}
+        boxSize="14"
+        borderRadius="full"
+        loading="lazy"
+        userSelect="none"
+      />
+
+      {/* Chat Info */}
+      <VStack alignItems="flex-start" spacing={0.5}>
+        <Heading
+          size="md"
           userSelect="none"
-        />
-        {/* Active Chat Symbol */}
-        {/* <div
-          className={`${
-            context?.activeChatInit?.ChatID === props.data.ChatID &&
-            classes.activeChatInitHeader
-          }`}
-        ></div> */}
-      </HStack>
-      <VStack alignItems="flex-start">
-        <Heading size="md" userSelect="none">
+          color={textColor}
+          noOfLines={1}
+        >
           {chatModalName}
         </Heading>
+
         {isLoadingMessages ? (
-          <Text userSelect="none" opacity="0.6">Loading…</Text>
+          <Text userSelect="none" opacity="0.6">
+            Loading…
+          </Text>
         ) : Messages?.[Messages?.length - 1]?.Message === "Gif" ? (
-          <Text userSelect="none">Gif</Text>
+          <Text userSelect="none" color={textColor}>
+            Gif
+          </Text>
         ) : (
-          <Text userSelect="none">
+          <Text userSelect="none" color={textColor}>
             {Messages?.[Messages?.length - 1]?.text?.substring?.(0, 25) || ""}
           </Text>
         )}
       </VStack>
-      {/* <div className={styles.emptydiv}></div> */}
     </HStack>
   );
 }

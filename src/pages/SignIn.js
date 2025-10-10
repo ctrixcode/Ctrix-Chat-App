@@ -7,31 +7,51 @@ import {
 import { auth } from "../firebase";
 
 import { useEffect } from "react";
-
 import { useNavigate } from "react-router-dom";
+
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import FormContainer from "../components/Form/FormContainer";
-
 import { Button, VStack, HStack, useColorMode } from "@chakra-ui/react";
-
 import YupValidation, { initialValues } from "../components/Form/YupSignIn";
 import TextField from "../components/Form/TextField";
 import { Formik, Form } from "formik";
-
 import { IconContext } from "react-icons";
 import { FiLogIn } from "react-icons/fi";
+
+const getAuthErrorMessage = (error) => {
+  switch (error.code) {
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'Invalid email or password. Please try again.';
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please try again later or reset your password.';
+    case 'auth/popup-closed-by-user':
+    case 'auth/cancelled-popup-request':
+      return 'The sign-in process was cancelled.';
+    case 'auth/popup-blocked':
+      return 'Pop-up blocked. Please allow pop-ups for this site to sign in.';
+    default:
+      return 'An unexpected error occurred. Please try again.';
+  }
+};
 
 export default function Signin() {
   const Navigate = useNavigate();
   const { colorMode } = useColorMode();
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         Navigate("/main");
       }
     });
-    // eslint-disable-next-line
-  }, [auth]);
+    return () => unsubscribe();
+  }, [Navigate]);
 
   const NavToSignUp = () => {
     Navigate("/signup");
@@ -40,28 +60,33 @@ export default function Signin() {
   const SignInWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then((cred) => {
-        console.log("Log in successfully");
+      .then(() => {
+        toast.success("Successfully logged in!");
       })
       .catch((err) => {
-        console.log(err);
+        const message = getAuthErrorMessage(err);
+        toast.error(message);
+        console.error("Firebase Google Auth Error:", err);
       });
   };
 
   const SignInWithEmailPassword = (values, actions) => {
     signInWithEmailAndPassword(auth, values.email, values.password)
       .then(() => {
+        toast.success("Successfully logged in!");
         actions.setSubmitting(false);
-        console.log("Sign in Successfully");
       })
       .catch((err) => {
+        const message = getAuthErrorMessage(err);
+        toast.error(message);
         actions.setSubmitting(false);
-        console.error("Something went wrong", err);
+        console.error("Firebase Email Auth Error:", err); 
       });
   };
 
   return (
-    <FormContainer Icon={LoginIcon} title="Sign in for an account!">
+    <FormContainer Icon={LoginIcon} title="Sign in to your account!">
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <Formik
         initialValues={initialValues}
         validationSchema={YupValidation}

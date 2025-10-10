@@ -9,9 +9,8 @@ import { auth } from "../firebase";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-// 1. Import from react-toastify
 import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import the CSS
+import 'react-toastify/dist/ReactToastify.css';
 
 import FormContainer from "../components/Form/FormContainer";
 import { Button, VStack, HStack, useColorMode } from "@chakra-ui/react";
@@ -25,15 +24,16 @@ export default function Signin() {
   const Navigate = useNavigate();
   const { colorMode } = useColorMode();
 
+  
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // This will navigate the user to the main page after a successful login
         Navigate("/main");
       }
     });
-    // eslint-disable-next-line
-  }, []); // Note: The dependency array should likely be empty here
+
+    return () => unsubscribe();
+  }, [Navigate]); 
 
   const NavToSignUp = () => {
     Navigate("/signup");
@@ -43,11 +43,9 @@ export default function Signin() {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
       .then(() => {
-        // 3. Add success toast for Google Sign-In
         toast.success("Successfully logged in!");
       })
       .catch((err) => {
-        // 4. Add error toast for Google Sign-In
         toast.error(err.message);
       });
   };
@@ -55,12 +53,10 @@ export default function Signin() {
   const SignInWithEmailPassword = (values, actions) => {
     signInWithEmailAndPassword(auth, values.email, values.password)
       .then(() => {
-        // 3. Add success toast for Email/Password Sign-In
         toast.success("Successfully logged in!");
         actions.setSubmitting(false);
       })
       .catch((err) => {
-        // 4. Add error toast for Email/Password Sign-In
         toast.error(err.message);
         actions.setSubmitting(false);
       });
@@ -68,7 +64,6 @@ export default function Signin() {
 
   return (
     <FormContainer Icon={LoginIcon} title="Sign in to your account!">
-      {/* 2. Add the ToastContainer component */}
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <Formik
         initialValues={initialValues}

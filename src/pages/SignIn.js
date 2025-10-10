@@ -20,20 +20,38 @@ import { Formik, Form } from "formik";
 import { IconContext } from "react-icons";
 import { FiLogIn } from "react-icons/fi";
 
+const getAuthErrorMessage = (error) => {
+  switch (error.code) {
+    case 'auth/user-not-found':
+    case 'auth/wrong-password':
+    case 'auth/invalid-credential':
+      return 'Invalid email or password. Please try again.';
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.';
+    case 'auth/too-many-requests':
+      return 'Too many attempts. Please try again later or reset your password.';
+    case 'auth/popup-closed-by-user':
+    case 'auth/cancelled-popup-request':
+      return 'The sign-in process was cancelled.';
+    case 'auth/popup-blocked':
+      return 'Pop-up blocked. Please allow pop-ups for this site to sign in.';
+    default:
+      return 'An unexpected error occurred. Please try again.';
+  }
+};
+
 export default function Signin() {
   const Navigate = useNavigate();
   const { colorMode } = useColorMode();
 
-  
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         Navigate("/main");
       }
     });
-
     return () => unsubscribe();
-  }, [Navigate]); 
+  }, [Navigate]);
 
   const NavToSignUp = () => {
     Navigate("/signup");
@@ -46,7 +64,9 @@ export default function Signin() {
         toast.success("Successfully logged in!");
       })
       .catch((err) => {
-        toast.error(err.message);
+        const message = getAuthErrorMessage(err);
+        toast.error(message);
+        console.error("Firebase Google Auth Error:", err);
       });
   };
 
@@ -57,13 +77,16 @@ export default function Signin() {
         actions.setSubmitting(false);
       })
       .catch((err) => {
-        toast.error(err.message);
+        const message = getAuthErrorMessage(err);
+        toast.error(message);
         actions.setSubmitting(false);
+        console.error("Firebase Email Auth Error:", err); 
       });
   };
 
   return (
     <FormContainer Icon={LoginIcon} title="Sign in to your account!">
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <Formik
         initialValues={initialValues}
         validationSchema={YupValidation}

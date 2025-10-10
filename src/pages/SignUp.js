@@ -10,6 +10,20 @@ import TextField from "../components/Form/TextField";
 import { Formik, Form } from "formik";
 import YupValidation, { initialValues } from "../components/Form/YupSignUp";
 
+const getSignUpErrorMessage = (error) => {
+  switch (error.code) {
+    case 'auth/email-already-in-use':
+      return 'This email address is already taken.';
+    case 'auth/weak-password':
+      return 'The password is too weak. Please use at least 6 characters.';
+    case 'auth/invalid-email':
+      return 'Please enter a valid email address.';
+    default:
+      return 'An unexpected error occurred. Please try again.';
+  }
+};
+
+
 export default function SignUp() {
   const auth = getAuth();
   const Navigate = useNavigate();
@@ -18,32 +32,17 @@ export default function SignUp() {
     createUserWithEmailAndPassword(auth, values.email, values.password)
       .then(() => {
         toast.success("Account created successfully!", {
-          position: "top-right",
-         
           autoClose: 2000,
-          
           onClose: () => Navigate("/signin"),
-          
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
         });
         actions.setSubmitting(false);
-      
       })
       .catch((error) => {
-        toast.error(error.message, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+      
+        const message = getSignUpErrorMessage(error);
+        toast.error(message);
         actions.setSubmitting(false);
+        console.error("Firebase SignUp Error:", error); 
       });
   };
 
@@ -79,7 +78,6 @@ export default function SignUp() {
               title="Confirm Password"
               YupValidation={YupValidation}
             />
-
             <VStack w={"full"} marginTop="2">
               <HStack w={"full"}>
                 <Button type="submit" isLoading={props.isSubmitting} w={"full"}>

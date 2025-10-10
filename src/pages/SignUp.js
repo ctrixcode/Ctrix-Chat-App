@@ -52,7 +52,7 @@ export default function SignUp() {
 
   return (
     <FormContainer title="Sign up for an account!">
-      <ToastContainer />
+     
       <Formik
         initialValues={initialValues}
         validationSchema={YupValidation}

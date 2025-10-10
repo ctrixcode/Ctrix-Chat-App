@@ -9,6 +9,14 @@ import { Route, Routes, Navigate } from "react-router-dom";
 
 export default function App() {
   return (
+    <>
+    <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+      />
     <Routes>
       <Route path="/" element={<Navigate replace to="signin" />} />
       <Route
@@ -22,5 +30,6 @@ export default function App() {
       <Route path="/signin" element={<Signin />} />
       <Route path="/signup" element={<SignUp />} />
     </Routes>
+    </>
   );
 }

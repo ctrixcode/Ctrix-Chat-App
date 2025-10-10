@@ -64,7 +64,6 @@ export default function Signin() {
 
   return (
     <FormContainer Icon={LoginIcon} title="Sign in to your account!">
-      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <Formik
         initialValues={initialValues}
         validationSchema={YupValidation}

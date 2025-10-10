@@ -1,5 +1,7 @@
 import Signin from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Home from "./pages/Home";
 
